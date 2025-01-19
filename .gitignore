@@ -1,1 +1,8 @@
+#asdf configuration
 .tool-versions
+
+# nodejs folders
+node_modules
+
+# next folders
+.next
