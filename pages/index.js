@@ -1,7 +1,7 @@
 export default function main() {
   return (
     <main>
-      <h1>pagina inicial</h1>
+      <h1>Em construção</h1>
     </main>
   );
 }
