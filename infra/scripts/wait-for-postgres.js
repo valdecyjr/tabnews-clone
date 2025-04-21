@@ -15,7 +15,7 @@ function checkPostgres(){
         }
 
         if (stdout.includes("accepting connections")) {
-            console.log("Postgres está aceitando conexões.");
+            console.log("\u{1F7E2} Postgres está aceitando conexões.\n");
             return;
         }
 
@@ -24,5 +24,5 @@ function checkPostgres(){
     }
 }
 
-console.log(" Aguardando o Postgres aceitar conexões...");
+console.log("\u{1F534} Aguardando o Postgres aceitar conexões...\n");
 checkPostgres();
