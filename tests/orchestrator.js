@@ -14,7 +14,7 @@ async function waitForAllServices(){
 
         async function fetchStatusPage() {
             const response = await fetch(`${webserver_url}/api/v1/status`);
-            if (!response.status === 200) {
+            if (response.status !== 200) {
                 throw new Error(`Status page not available, got ${response.status}`);
             }
         }
