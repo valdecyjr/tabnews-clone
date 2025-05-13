@@ -1,4 +1,5 @@
 import retry from "async-retry";
+import database from "infra/database";
 require("dotenv").config();
 
 const webserver_url = process.env.WEBSERVER_URL;
@@ -21,8 +22,13 @@ async function waitForAllServices() {
   }
 }
 
+async function clearDatabase() {
+  await database.query("drop schema public cascade; create schema public;");
+}
+
 const orchestrator = {
   waitForAllServices,
+  clearDatabase,
 };
 
 export default orchestrator;
