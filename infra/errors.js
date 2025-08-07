@@ -43,7 +43,7 @@ export class MethodNotAllowedError extends Error {
     super("Method not allowed");
     this.name = "MethodNotAllowedError";
     this.action = "Verify the request method";
-    this.status_code = 405;
+    this.statusCode = 405;
   }
 
   toJSON() {
@@ -51,7 +51,27 @@ export class MethodNotAllowedError extends Error {
       name: this.name,
       message: this.message,
       action: this.action,
-      status_code: this.status_code,
+      status_code: this.statusCode,
+    };
+  }
+}
+
+export class ValidationError extends Error {
+  constructor({ cause, message, action }) {
+    super(message || "Um erro de validação ocorreu", {
+      cause,
+    });
+    this.name = "ValidationError";
+    this.action = action || "Ajuste os dados enviados e tente novamente.";
+    this.statusCode = 400;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
     };
   }
 }
