@@ -5,10 +5,8 @@ import {
 } from "infra/errors.js";
 
 function onNoMatchHandler(request, response) {
-  const methodNotAllowedError = new MethodNotAllowedError();
-  response
-    .status(methodNotAllowedError.status_code)
-    .json(methodNotAllowedError);
+  const publicErrorObject = new MethodNotAllowedError();
+  response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
 function onErrorHandler(error, request, response) {
@@ -19,8 +17,6 @@ function onErrorHandler(error, request, response) {
     statusCode: error.statusCode,
     cause: error,
   });
-
-  console.error(publicErrorObject);
 
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
