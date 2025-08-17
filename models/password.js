@@ -2,7 +2,8 @@ import bcrytpjs from "bcryptjs";
 
 async function hash(password) {
   const rounds = getNumberOfRounds();
-  return await bcrytpjs.hash(password, rounds);
+  const passwordPlusPepper = addPepperToPassword(password);
+  return await bcrytpjs.hash(passwordPlusPepper, rounds);
 }
 
 function getNumberOfRounds() {
@@ -10,7 +11,15 @@ function getNumberOfRounds() {
 }
 
 async function compare(providedPassword, storedPassword) {
-  return await bcrytpjs.compare(providedPassword, storedPassword);
+  const providedPasswordPlusPepper = addPepperToPassword(providedPassword);
+  return await bcrytpjs.compare(providedPasswordPlusPepper, storedPassword);
+}
+
+function addPepperToPassword(password) {
+  if (!process.env.PEPPER) {
+    throw new Error("PEPPER environment variable is not set");
+  }
+  return password + process.env.PEPPER;
 }
 
 const password = {
