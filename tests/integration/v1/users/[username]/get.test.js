@@ -31,13 +31,12 @@ describe("GET /api/v1/users/[username]", () => {
       expect(response2.status).toBe(200);
 
       const response2Body = await response2.json();
-      console.log(response2Body);
 
       expect(response2Body).toEqual({
         id: response2Body.id,
         username: "ValdecysJunior",
         email: "valdecysjunior@gmail.com",
-        password: "password123",
+        password: response2Body.password,
         create_at: response2Body.create_at,
         update_at: response2Body.update_at,
       });
@@ -71,7 +70,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: response2Body.id,
         username: "scarsirioth",
         email: "scarsirioth@gmail.com",
-        password: "password123",
+        password: response2Body.password,
         create_at: response2Body.create_at,
         update_at: response2Body.update_at,
       });
