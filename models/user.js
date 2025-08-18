@@ -9,47 +9,6 @@ async function create(userInputValues) {
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
 
-  async function validateUniqueUsername(username) {
-    const results = await database.query({
-      text: `
-      SELECT
-        username
-      FROM
-        users
-      WHERE
-        LOWER(username) =  LOWER($1)
-      ;`,
-      values: [username],
-    });
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "Username ja cadastrado",
-        action: "Utilize outro username para realizar o cadastro",
-      });
-    }
-  }
-
-  async function validateUniqueEmail(email) {
-    const results = await database.query({
-      text: `
-      SELECT
-        email
-      FROM
-        users
-      WHERE
-        LOWER(email) = LOWER($1)
-      ;`,
-      values: [email],
-    });
-
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "Email ja cadastrado",
-        action: "Utilize outro email para realizar o cadastro",
-      });
-    }
-  }
-
   async function hashPasswordInObject(userInputValues) {
     const hashedPassword = await password.hash(userInputValues.password);
     userInputValues.password = hashedPassword;
@@ -100,9 +59,69 @@ async function findOneByUsername(username) {
   }
 }
 
+async function update(username, userInputValues) {
+  const currentUser = await findOneByUsername(username);
+
+  if (
+    "username" in userInputValues &&
+    !compare(userInputValues.username, currentUser.username)
+  ) {
+    await validateUniqueUsername(userInputValues.username);
+  }
+  if ("email" in userInputValues) {
+    await validateUniqueEmail(userInputValues.email);
+  }
+
+  function compare(value1, value2) {
+    return value1.toLowerCase() === value2.toLowerCase();
+  }
+}
+
+async function validateUniqueUsername(username) {
+  const results = await database.query({
+    text: `
+      SELECT
+        username
+      FROM
+        users
+      WHERE
+        LOWER(username) =  LOWER($1)
+      ;`,
+    values: [username],
+  });
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      message: "Username ja cadastrado",
+      action: "Utilize outro username para realizar esta operação.",
+    });
+  }
+}
+
+async function validateUniqueEmail(email) {
+  const results = await database.query({
+    text: `
+      SELECT
+        email
+      FROM
+        users
+      WHERE
+        LOWER(email) = LOWER($1)
+      ;`,
+    values: [email],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      message: "Email ja cadastrado",
+      action: "Utilize outro email para realizar esta operação.",
+    });
+  }
+}
+
 const user = {
   create,
   findOneByUsername,
+  update,
 };
 
 export default user;
