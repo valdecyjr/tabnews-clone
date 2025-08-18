@@ -1,5 +1,7 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator";
+import user from "models/user.js";
+import password from "models/password";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -27,14 +29,26 @@ describe("POST /api/v1/users", () => {
         id: responseBody.id,
         username: "valdecysjunior",
         email: "valdecysjunior@gmail.com",
-        password: "password123",
-        create_at: responseBody.create_at,
-        update_at: responseBody.update_at,
+        password: responseBody.password,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
-      expect(Date.parse(responseBody.create_at)).not.toBeNaN();
-      expect(Date.parse(responseBody.update_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername("valdecysjunior");
+      const correctPasswordMatch = await password.compare(
+        "password123",
+        userInDatabase.password,
+      );
+      expect(correctPasswordMatch).toBe(true);
+      const incorrectPasswordMatch = await password.compare(
+        "SenhaErrada",
+        userInDatabase.password,
+      );
+      expect(incorrectPasswordMatch).toBe(false);
     });
     test("With duplicate 'email'", async () => {
       const response = await fetch("http://localhost:3000/api/v1/users", {
@@ -67,7 +81,7 @@ describe("POST /api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "Email ja cadastrado",
-        action: "Utilize outro email para realizar o cadastro",
+        action: "Utilize outro email para realizar esta operação.",
         status_code: 400,
       });
     });
@@ -102,7 +116,7 @@ describe("POST /api/v1/users", () => {
       expect(responseBody).toEqual({
         name: "ValidationError",
         message: "Username ja cadastrado",
-        action: "Utilize outro username para realizar o cadastro",
+        action: "Utilize outro username para realizar esta operação.",
         status_code: 400,
       });
     });
